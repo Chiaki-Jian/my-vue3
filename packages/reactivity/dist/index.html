@@ -13,27 +13,31 @@
 
 </body>
 <!-- <script src="../../../node_modules/@vue/reactivity/dist/reactivity.global.js"></script> -->
+<script src="../dist/reactivity.global.js"></script>
 <script>
   // effect 副作用函数，依赖数据发生变化 effect 再次执行
   // reactive 对数据深度绑定响应式
   // shallowReactive 对表层数据绑定响应式
-  const { effect, reactive, shallowReactive, } = VueReactivity
+  const { effect, reactive } = VueReactivity
 
-  const state1 = reactive({ name: 'tom', age: 1, address: { street: 'xxxx' } })
-  const state2 = shallowReactive({ name: 'tom', age: 1, address: { street: 'xxxx' } })
+  const data = { name: 'tom', age: 1 }
+  // 优化场景1: 代理统一数据
+  // const state1 = reactive(data)
+  // const state2 = reactive(data)
+  // console.log(state1 === state2);
 
-  console.log('reactive:', state1.address); // proxy { street: 'xxxx' }
-  console.log('shallowReactive:', state2.address); // { street: 'xxxx' }
+  // 优化场景2: 代理数据重复代理
+  const state1 = reactive(data)
+  const state2 = reactive(state1)
+  console.log(state1 === state2);
 
   effect(() => {
-    // console.log('effect');
-    app.innerHTML = state1.name + '猫' + state1.age + '岁了' + ',' + state2.name + '猫' + state2.age + '岁了'
+    app.innerHTML = state1.name + '猫' + state1.age + '岁了'
   })
 
 
   setTimeout(() => {
     state1.age++
-    state2.age++
   }, 1000)
 
 </script>
